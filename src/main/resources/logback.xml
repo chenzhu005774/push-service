@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+	<property name="LOG_HOME" value="./logs" />
+	<property name="CONSOLE_LOG_PATTERN" value="%date{yyyy-MM-dd HH:mm:ss.SSS} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n"/>
+
+	<!-- 出错日志 appender  -->
+	<appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/error/error.log</file> <!-- 日志名称 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/error/error.%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+			<maxHistory>30</maxHistory>  <!-- 保存30天 -->
+			<totalSizeCap>10GB</totalSizeCap>  <!-- 总日志大小 -->
+			<maxFileSize>1GB</maxFileSize><!-- 日志文件过大会使的编辑器打开非常慢，因此设置日志最大50MB -->
+		</rollingPolicy>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+
+	<!-- info日志 appender  -->
+	<appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/info/info.log</file> <!-- 日志名称 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/info/info.%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>10GB</totalSizeCap>
+			<maxFileSize>1GB</maxFileSize>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+    <!-- 控制台 appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+	<appender name ="ASYNCERROR" class= "ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>512</queueSize>
+		<appender-ref ref="ERROR"/>
+	</appender>
+
+	<appender name ="ASYNCINFO" class= "ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>512</queueSize>
+		<appender-ref ref="INFO" />
+	</appender>
+
+	<!--<appender name ="ASYNCSTDOUT" class= "ch.qos.logback.classic.AsyncAppender">-->
+		<!--<discardingThreshold>0</discardingThreshold>-->
+		<!--<queueSize>512</queueSize>-->
+		<!--<appender-ref ref="STDOUT" />-->
+	<!--</appender>-->
+
+	<!--日志打印的包的范围，及分类日志文件存储 -->
+	<logger name="com.amt.push" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="STDOUT"/>
+		<!--<appender-ref ref="ERROR"/>-->
+		<!--<appender-ref ref="INFO" />-->
+		<appender-ref ref="ASYNCERROR" />
+		<appender-ref ref="ASYNCINFO" />
+		<!--<appender-ref ref="ASYNCSTDOUT" />-->
+	</logger>
+
+    <!--控制台打印资源加载信息-->
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
